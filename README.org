@@ -1,0 +1,45 @@
+#+TITLE: Heimdali-test
+#+DATE: <2015-02-16 lun.>
+#+AUTHOR: Dominique BEREZIAT
+#+EMAIL: bereziat@albatros.rocq.inria.fr
+#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
+#+OPTIONS: author:t c:nil creator:comment d:(not "LOGBOOK") date:t
+#+OPTIONS: e:t email:nil f:t inline:t num:t p:nil pri:nil stat:t
+#+OPTIONS: tags:t tasks:t tex:t timestamp:t toc:t todo:t |:t
+#+CREATOR: Emacs 24.4.3 (Org mode 8.2.10)
+#+DESCRIPTION:
+#+EXCLUDE_TAGS: noexport
+#+KEYWORDS:
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+
+Work in progress ...
+
+* Makes your Assimage code Heimdali compatible
+  1. Edit your =toolsXXX.hxx= file, add top of the file the following lines:
+     #+BEGIN_SRC C++
+   #include "heimdali/itkhelper.hxx"
+   using namespace Heimdali;
+#+END_SRC
+     and remove this one:
+     #+BEGIN_SRC C++
+     #include <Inr++.h>
+     #+END_SRC
+  2. Edit your =AssimXXX.cpp= (or =SimulationXXX.cpp=) file and replace the
+     following sequence of code:
+     #+BEGIN_SRC C++
+  InrImage <float> Obsim(ObsFile);
+  Obsim.openForRead();
+  Obsim.read();
+  Obsim.close();
+#+END_SRC
+  3. Replace:
+     #+BEGIN_SRC C++
+     InrImage <float> UVim(Nx, Ny, passim.Nobs, 2, INR_ENCODE_FLOAT);
+     #+END_SRC
+     by
+     #+BEGIN_SRC C++
+     ImageFloat::Pointer UVim = CreateImage(Nx, Ny, passim.Nobs, 2);
+     #+END_SRC
+
+
