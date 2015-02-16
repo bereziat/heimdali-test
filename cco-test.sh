@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PATH=/usr/local/inrimage/bin:$PATH
+
 set -x
 
 echo "Lena est codée sur 1 octet:"
