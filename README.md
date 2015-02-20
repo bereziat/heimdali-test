@@ -22,6 +22,8 @@ Work in progress &#x2026;
         
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -g")
         set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -O2 -g")
+        # if you have fortran source files
+        set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -O2 -g")
         
         ### FIXME: this part will be summurized in a uniqu call  ###
         
@@ -95,6 +97,8 @@ Work in progress &#x2026;
     
         #include <Inr++.h>
     
+    by:
+    
         #include "heimdali/inrimage.hxx"
         #include "heimdali/itkhelper.hxx"
         using namespace Heimdali;
@@ -109,6 +113,8 @@ Work in progress &#x2026;
 
 The file `heimdali/inrimage.hxx` is an Heimdali replacement of `Inr++.h`.
 So, you doesn't need to change your calls to the image library.
+1.  ITK uses the filename extension to determine the image format. So change     
+    strings ".inr" into ".h5" in your output filenames.
 
 To compile your code:
 

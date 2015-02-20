@@ -27,6 +27,8 @@ project (SimulationAIMI)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -g")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -O2 -g")
+# if you have fortran source files
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -O2 -g")
 
 ### FIXME: this part will be summurized in a uniqu call  ###
 
@@ -101,6 +103,7 @@ target_link_libraries(SimulationAIMI ${HEIMDALI_LIBRARY} ${ITK_LIBRARIES} ${ITKI
      #+BEGIN_SRC C++
 #include <Inr++.h>
 #+END_SRC
+     by:
      #+BEGIN_SRC C++
 #include "heimdali/inrimage.hxx"
 #include "heimdali/itkhelper.hxx"
@@ -116,7 +119,8 @@ InitInrimage(argc, argv, (char*)"1.0", Ucmd, Udetail);
      d'imprimer des choses avec -help, -version etc... 
   The file =heimdali/inrimage.hxx= is an Heimdali replacement of =Inr++.h=.
   So, you doesn't need to change your calls to the image library.
-
+  4. ITK uses the filename extension to determine the image format. So change     
+     strings ".inr" into ".h5" in your output filenames.
 
   To compile your code:
   #+BEGIN_SRC bash
