@@ -1,0 +1,13 @@
+Convertion H5 <-> INRIMAGE
+
+Ces deux codes seront distribués avec la dernière version
+d'Inrimage. En attendant, il me servent à tester toutes
+les codages sous HEIMDALI et à voir si on doit encore
+améliorer hconv.
+
+* MacPorts *
+
+J'ai compilé Inrimage avec gcc-mp-4.7 et gfortran-mp-4.7.
+hcc (commande macports )est un binding de /usr/bin/clang et, oh miracle,
+ça link avec inrimage (alors que /usr/bin/gcc n'y arrive pas).
+
