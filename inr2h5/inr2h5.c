@@ -25,6 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern int debug_;
+
 int main( int argc, char **argv) {
   char name[128];
   struct image *nf;
@@ -40,6 +42,9 @@ int main( int argc, char **argv) {
   inr_init( argc, argv, "", "", "");
   infileopt(name);
 
+  /* no HDF5 message error unless -D option is specified */
+  if( !debug_) H5Eset_auto (  0, (H5E_auto2_t) NULL, NULL);
+  
   nf = imagex_( name, "e", "", &fmt);
     
   /* create hdf5 structures */
@@ -90,6 +95,42 @@ int main( int argc, char **argv) {
     H5Sclose( space);
 
     /* TODO: biais et echelle */
+
+    /* History */
+    type = H5Tcopy( H5T_C_S1);
+    H5Tset_size( type, H5T_VARIABLE);
+    type = H5Tcopy( type);
+
+
+#if 0
+    geom[0] = 1;
+    geom[1] = H5S_UNLIMITED;
+    space = H5Screate_simple( 1, geom, geom+1);
+#else
+    space = H5Screate( H5S_SCALAR);
+#endif
+    data = H5Dcreate( fd, "/ITKImage/0/MetaData/history", type, space,
+		      H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+    {
+      int len = 0;
+      char *str;
+      
+      for( i=0; i<argc; i++)
+	len += strlen(argv[i]) + 1;      
+      str = malloc( len);
+      *str = '\0';
+      for( i=0; i<argc; i++) {
+	strcat( str, argv[i]);
+	if( i < argc - 1) strcat ( str, " ");
+      }
+
+      H5Dwrite( data, type, H5S_ALL, H5S_ALL, H5P_DEFAULT, &str);
+
+    }
+    H5Dclose( data);
+    H5Sclose( space);
+    
   }
   
   

@@ -1,0 +1,23 @@
+# Ce fichier contient les definitions des filtres de conversion
+#  automatique en Inrimage de divers types d'image
+# Syntaxe : 
+#  chaque ligne est composee de 3 ou 4 champs separes par ':'
+#  Les 2 1ers champs peuvent contenir une liste d'elements separes par ','.
+#    liste des .ext : liste des magic numbers (offset + caracteres hexa): commande
+#		[:chemin de commande par defaut]
+#Ex    .gz, .Z : 0 1f 8b, 0 1f 9d:zcat: /usr/local/bin/zcat
+.gif,.GIF ::gif2inr
+#.rle :: rle2inr
+.bmp,.pic :: bmp2inr
+.xbm :: xbm2inr
+.hdr :: hdr2inr
+.img :: img2inr
+#.vif,.xv:0 ab 1: viff2inr
+.xwd :: d2im -hdr=8 -k 1000
+.ras :: ras2inr
+.tif,.tiff:0 4d 4d,0 49 49:tiff2inr -d2z:/usr/local/inrimage/bin/tiff2inr
+.png: :png2inr -noalpha:/usr/local/inrimage/bin/png2inr
+.jp2,.jpc,.jpx::jp22inr
+.pbm,.pgm,.ppm,.pnm,.pam :: pam2inr
+.jpg, .JPG, .jpeg:: jpg2inr
+.h5:: h52inr

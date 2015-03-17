@@ -6,7 +6,6 @@
  * and float simple/double precision
  * 
  * TODO/FIXME
- * - control affichage erreur HDF5
  * - lecture des HDF5 image
  * - palette ??? C'est comment dans ITK ???
  * - history
@@ -16,6 +15,8 @@
 #include <hdf5.h>
 #include <stdlib.h>
 
+extern int debug_;
+  
 int main( int argc, char **argv) {
   char name[256];
   
@@ -23,7 +24,10 @@ int main( int argc, char **argv) {
 	    "Convert ITK/HDF5 image to Inrimage. Options are:\n"
 	    "\t-i: just print image header (in inrimage format)\n"
 	    "\t-d: select ITK directory (0 is default)\n");
-  
+
+  /* no HDF5 message error unless -D option is specified */
+  if( !debug_) H5Eset_auto (  0, (H5E_auto2_t) NULL, NULL);
+    
   infileopt(name);
   if( H5Fis_hdf5(name)) {
     int dir = 0;
@@ -49,7 +53,7 @@ int main( int argc, char **argv) {
     fd = H5Fopen( name, H5F_ACC_RDONLY, H5P_DEFAULT);
 
     set = H5Dopen2(fd, path, H5P_DEFAULT);
-    if( set < 0) imerror( 11, "Not an ITK/HDF5 file");
+    if( set < 0) imerror( 11, "Error: not an ITK/HDF5 file\n");
     
     type = H5Dget_type(set);
     format.BSIZE =  H5Tget_size( type);
@@ -68,7 +72,7 @@ int main( int argc, char **argv) {
 	mem_type_id = (format.EXP < 0) ? H5T_STD_I32LE : H5T_STD_U32LE;
 	break;
       default:
-	imerror(9,"Coding format unsupported");
+	imerror(9,"Error: unsupported coding format (%d bytes per value)\n", format.BSIZE);
       }
       break;
     case H5T_FLOAT:
@@ -81,11 +85,11 @@ int main( int argc, char **argv) {
 	mem_type_id = H5T_IEEE_F64LE;
 	break;
       default:
-	imerror(9,"Coding format unsupported");
+	imerror(9,"Error: unsupported float format\n");
       }
       break;
     default:
-      imerror( 11, "Invalid ITK/HDF5 file");      
+      imerror( 11, "Error: unsupported class type (%d)\n", H5Tget_class(type));
     } 
 
 
@@ -120,7 +124,6 @@ int main( int argc, char **argv) {
       if( set2) {     /* FIXME: error handling verbose */
 	int exponent;
 	H5Dread(set2, H5T_STD_I32LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &exponent);
-	printf("exp:%d\n",exponent);
 	if( format.EXP > 0)
 	  format.EXP = format.EXP + exponent;
 	else
@@ -150,7 +153,7 @@ int main( int argc, char **argv) {
       H5Dread( set, mem_type_id, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);    
       c_ecr( nf, format.DIMY, data);
     } else {
-      /* Not enought memory to hold the image ? We work frame by frame ... */
+      /* Not enough memory to hold the image ? We work frame by frame ... */
       hsize_t offset[4];
       hsize_t count[4];
       int iz;
@@ -187,7 +190,7 @@ int main( int argc, char **argv) {
     free(data);
     
   } else
-      imerror( 11, "Not an HDF5 file");
+      imerror( 11, "Error: not an HDF5 file\n");
   
   return 0;
 }
