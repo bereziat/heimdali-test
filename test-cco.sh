@@ -1,13 +1,13 @@
 #!/bin/bash
 
-PATH=/usr/local/inrimage/bin:$PATH
+#PATH=/usr/local/inrimage/bin:$PATH
 
 set -x
 
 echo "Lena est codée sur 1 octet:"
-par lena.inr
+par lena.inr.gz
 echo "Sa dynamique est entre 0.117 et 0.937:"
-ical lena.inr
+ical lena.inr.gz
 cat <<EOF
 ical a lu l'image comme si elle était en flottant. En fait elle considère
 qu'elle est a virgule fixe, avec des valeurs comprises entre 0 et 2**n-1
@@ -17,8 +17,8 @@ $(echo 0.117647*255 | bc)  $(echo 0.499636*255 | bc)  $(echo 0.937255*255 | bc)
 EOF
 
 echo "Conversion en virgule flottante:"
-cco -r lena.inr | par
-cco -r lena.inr | ical
+cco -r lena.inr.gz | par
+cco -r lena.inr.gz | ical
 
 cat <<EOF
 Règle cco n°1 : conversion de virgule fixe vers virgule flottante:
@@ -29,8 +29,8 @@ EOF
 
 
 echo "Reconversion en virgule fixe:"
-cco -r lena.inr | cco -f | par
-cco -r lena.inr | cco -f | ical
+cco -r lena.inr.gz | cco -f - | par
+cco -r lena.inr.gz | cco -f - | ical
 
 cat <<EOF
 Règle cco n°2:  conversion virgule flottante vers virgule fixe:
@@ -45,7 +45,7 @@ Par exemple:
 lena a un min a 0.117647. si je multiplie par 8.5, je me ramène à 1:
 EOF
 
-sc -n 8.5 lena.inr | cco -r > lena-85r.inr
+sc -n 8.5 lena.inr.gz | cco -r > lena-85r.inr
 par lena-85r.inr
 ical lena-85r.inr
 
@@ -74,27 +74,27 @@ Autres conversions
 EOF
 
 echo "Conversion -o 1 vers -o 2 (le -f est explicite):"
-cco lena.inr -o 2 > lena-2o.inr
+cco lena.inr.gz -o 2 > lena-2o.inr
 echo "et réciproquement "
-cco lena-2o.inr -o 1 | so lena.inr | ical
+cco lena-2o.inr -o 1 | so lena.inr.gz | ical
 
 echo "Conversion -r vers -o 2 (le -f est explicite):"
-cco lena.inr -r > lena-r.inr
+cco lena.inr.gz -r > lena-r.inr
 cco lena-r.inr -o 2 > lena-r2o.inr
 echo "et réciproquement "
-cco lena-r2o.inr -r | so lena.inr | ical
+cco lena-r2o.inr -r | so lena.inr.gz | ical
 
 cat <<EOF
 
 Cette série de conversion n'a pas changé les statistiques de l'image:
 EOF
-ical lena.inr lena-2o.inr lena-r.inr lena-r2o.inr
+ical lena.inr.gz lena-2o.inr lena-r.inr lena-r2o.inr
 
 
 echo
 echo "Conversion de n'importe quoi vers -b 1 (le -f est explicite): il s'agit d'une image binaire"
 cco lena-r.inr -b 1 > lena-rb.inr
-cco lena.inr -b 1 > lena-fb.inr
+cco lena.inr.gz -b 1 > lena-fb.inr
 so  lena-?b.inr | ical
 
 
