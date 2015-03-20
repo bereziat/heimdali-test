@@ -11,3 +11,9 @@ J'ai compilé Inrimage avec gcc-mp-4.7 et gfortran-mp-4.7.
 hcc (commande macports )est un binding de /usr/bin/clang et, oh miracle,
 ça link avec inrimage (alors que /usr/bin/gcc n'y arrive pas).
 
+
+Je pense qu'on peut laisser tomber biais, echelle et maille. ce n'est
+pas du tout utilisé (enfin je crois !) par les routines
+lecture/ecriture flottant. enfin si: si on a defini imsc, alors EXP
+est sans effet sur la conversion flottant.
+

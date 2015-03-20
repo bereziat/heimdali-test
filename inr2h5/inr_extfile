@@ -20,4 +20,4 @@
 .jp2,.jpc,.jpx::jp22inr
 .pbm,.pgm,.ppm,.pnm,.pam :: pam2inr
 .jpg, .JPG, .jpeg:: jpg2inr
-.h5:: h52inr
+.h5::h52inr

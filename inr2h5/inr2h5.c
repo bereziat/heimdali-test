@@ -10,7 +10,7 @@
  *  - origins
  *  - frame by frame access
  *  - biais and scale
- *  - history
+ *  - history [OK but discuss]
  *  - color palette (how is it with ITK ?)
  *  - H5Image
  *  - compression (see inactive by default)
@@ -20,7 +20,7 @@
  *    know for ITK...
  */
 
-#include <hdf5.h>
+#include "h5utils.h"
 #include <inrimage/image.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,7 +28,7 @@
 extern int debug_;
 
 int main( int argc, char **argv) {
-  char name[128];
+  char name[128], *str;
   struct image *nf;
   struct nf_fmt fmt;
   hid_t fd, space, type, data, group, itype;
@@ -65,7 +65,6 @@ int main( int argc, char **argv) {
   ldims[1] = fmt.NDIMY;
   ldims[2] = fmt.NDIMZ;
   H5Dwrite( data, H5T_STD_U64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, ldims);
-
   H5Dclose(data);
   H5Sclose(space);
 
@@ -78,59 +77,39 @@ int main( int argc, char **argv) {
 
   for( i=0; i<9; i++) ddims[i] = 0;
   ddims[0] = ddims[4] = ddims[8] = 1;
-  H5Dwrite( data, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, ddims);
-  
+  H5Dwrite( data, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, ddims);  
   H5Dclose( data);
   H5Sclose( space);
 
   /* Meta données: on s'en sert pour l'historique, l'exposant, biais et echelle */
   H5Gcreate( fd, "/ITKImage/0/MetaData", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   if( fmt.TYPE != REELLE) {
-    space = H5Screate( H5S_SCALAR);
-    data = H5Dcreate( fd, "/ITKImage/0/MetaData/exponent", H5T_STD_I32LE, space,
-		      H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     i = fmt.EXP > 0 ? fmt.EXP - 200 : -fmt.EXP - 200; 
-    H5Dwrite( data, H5T_STD_I32LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &i);
-    H5Dclose( data);
-    H5Sclose( space);
+    write_scalar ( fd, "/ITKImage/0/MetaData/exponent", H5T_STD_I32LE, &i);
+    // FIXME: if scale is defined, EXP is ignored.
+    write_scalar ( fd, "/ITKImage/0/MetaData/scale", H5T_IEEE_F32LE, &fmt.scale);
+    // FIXME: Only if BIAS= is found
+    write_scalar ( fd, "/ITKImage/0/MetaData/bias", H5T_IEEE_F32LE, &fmt.bias);
+    
 
-    /* TODO: biais et echelle */
-
-    /* History */
-    type = H5Tcopy( H5T_C_S1);
-    H5Tset_size( type, H5T_VARIABLE);
-    type = H5Tcopy( type);
-
-
-#if 0
-    geom[0] = 1;
-    geom[1] = H5S_UNLIMITED;
-    space = H5Screate_simple( 1, geom, geom+1);
-#else
-    space = H5Screate( H5S_SCALAR);
-#endif
-    data = H5Dcreate( fd, "/ITKImage/0/MetaData/history", type, space,
-		      H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-
+    /* Historique/Commentaires/Clés */
     {
-      int len = 0;
+      int len;
       char *str;
-      
+
+      // FIXME:
+      len  = strlen("#*[H]*<1> ");
       for( i=0; i<argc; i++)
-	len += strlen(argv[i]) + 1;      
+	len += strlen(argv[i]) + 1;
       str = malloc( len);
-      *str = '\0';
+      strcpy( str, "#*[H]*<1> ");
+
       for( i=0; i<argc; i++) {
 	strcat( str, argv[i]);
 	if( i < argc - 1) strcat ( str, " ");
       }
-
-      H5Dwrite( data, type, H5S_ALL, H5S_ALL, H5P_DEFAULT, &str);
-
+      write_string( fd, "/ITKImage/0/MetaData/history", &str);
     }
-    H5Dclose( data);
-    H5Sclose( space);
-    
   }
   
   
@@ -150,7 +129,6 @@ int main( int argc, char **argv) {
 		    H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   ddims[0] = ddims[1] = ddims[2] = 1;
   H5Dwrite( data, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, ddims);
-
   H5Dclose( data);
   H5Sclose( space);
   
@@ -203,28 +181,26 @@ int main( int argc, char **argv) {
     c_cnvtbg( buf, buf, fmt.DIMX*fmt.DIMY, icodi, icodo, 0, 0);  // FIXME: fmt.EXP, fmt.EXP) is better ???;
   }  
   H5Dwrite( data, itype, space, H5S_ALL, H5P_DEFAULT, buf);
-
-  /* Create VoxelType dataset */
-  type = H5Tcopy (H5T_C_S1);
-  H5Tset_size ( type, 10); /* FIXME: H5T_VARIABLE); */
-    
-  geom[0] = 1;
-  space = H5Screate_simple( 1, geom, NULL);
-  data = H5Dcreate( fd, "/ITKImage/0/VoxelType", type, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-
-  if( itype == H5T_STD_U8LE)        H5Dwrite( data, type, H5S_ALL, H5S_ALL, H5P_DEFAULT, "UCHAR");
-  else if( itype == H5T_STD_U16LE)  H5Dwrite( data, type, H5S_ALL, H5S_ALL, H5P_DEFAULT, "UINT");
-  else if( itype == H5T_STD_U32LE)  H5Dwrite( data, type, H5S_ALL, H5S_ALL, H5P_DEFAULT, "ULONG");
-  else if( itype == H5T_STD_I8LE)   H5Dwrite( data, type, H5S_ALL, H5S_ALL, H5P_DEFAULT, "CHAR");
-  else if( itype == H5T_STD_I16LE)  H5Dwrite( data, type, H5S_ALL, H5S_ALL, H5P_DEFAULT, "INT");
-  else if( itype == H5T_STD_I32LE)  H5Dwrite( data, type, H5S_ALL, H5S_ALL, H5P_DEFAULT, "LONG");    
-  else if( itype == H5T_IEEE_F32LE) H5Dwrite( data, type, H5S_ALL, H5S_ALL, H5P_DEFAULT, "FLOAT");
-  else if( itype == H5T_IEEE_F64LE) H5Dwrite( data, type, H5S_ALL, H5S_ALL, H5P_DEFAULT, "DOUBLE");
-  
   H5Dclose( data);
-  H5Sclose( space);
+  H5Dclose( space);
+  
+  /* Create VoxelType dataset */
+  str = (char*)malloc(7);
+  *str = '\0';
+  if( itype == H5T_STD_U8LE)        strcpy( str, "UCHAR");
+  else if( itype == H5T_STD_U16LE)  strcpy( str, "UINT");
+  else if( itype == H5T_STD_U32LE)  strcpy( str, "ULONG");
+  else if( itype == H5T_STD_I8LE)   strcpy( str, "CHAR");
+  else if( itype == H5T_STD_I16LE)  strcpy( str, "INT");
+  else if( itype == H5T_STD_I32LE)  strcpy( str, "LONG");    
+  else if( itype == H5T_IEEE_F32LE) strcpy( str, "FLOAT");
+  else if( itype == H5T_IEEE_F64LE) strcpy( str, "DOUBLE");
+  write_string( fd, "/ITKImage/0/VoxelType", &str);
 
-  /* Create ITKVersion (est-ce utile ?) */
+  /* Create ITKVersion dataset */
+  strcpy( str, "4.8.0");
+  write_string( fd, "/ITKVersion", &str);
+
 
   H5Fclose( fd);
   fermnf_(&nf);

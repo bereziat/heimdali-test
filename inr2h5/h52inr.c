@@ -8,7 +8,7 @@
  * TODO/FIXME
  * - lecture des HDF5 image
  * - palette ??? C'est comment dans ITK ???
- * - history
+ * - history, exponent, bias, scale
  */
 
 #include <inrimage/image.h>

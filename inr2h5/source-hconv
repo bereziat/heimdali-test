@@ -2,8 +2,10 @@
 # define hconv command
 # add hdf5 support in Inrimage
 
-alias hconv=/Users/bereziat/HEIMDALI/heimdali/build/cmd/hconv
+alias hconv=/Users/bereziat/HEIMDALI/heimdali-bereziat/build/cmd/hconv
 hpar () { h5dump $1 | grep Voxel -A10; }
+hvis() { cat > /tmp/hvis.h5; xvis /tmp/hvis.h5 $*; }
+
 INR_EXTFILE=~/HEIMDALI/heimdali-test/inr2h5/inr_extfile
 export INR_EXTFILE
 PATH=~/HEIMDALI/heimdali-test/inr2h5:$PATH
