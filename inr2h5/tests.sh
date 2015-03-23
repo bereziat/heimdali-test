@@ -5,12 +5,13 @@ case $# in
 	cat <<EOF
 Performs some tests on inr2h5/h52inr commands
 Usage is: $0 (float|double|unsigned|signed|bits|packed|exponent)
+if SILENT env variable is defined, print only the test result
 EOF
 	exit
 	;;
 esac
 
-set -x
+[ -z "$SILENT" ] && set -x
 
 extg ../lena.inr >lena.inr -y 200
 
@@ -18,14 +19,14 @@ case $1 in
     float)
 	echo "####### Float simple precision #######"
 	cco -r lena.inr | ./inr2h5 - lena.h5
-	h5dump lena.h5 | grep 'Voxel' -A10
+	[ -z "$SILENT" ] && h5dump lena.h5 | grep 'Voxel' -A10
 	./h52inr lena.h5 | so lena.inr | ical
 	;;
 
     double)
 	echo "####### Float double precision #######"
 	cco -r lena.inr -o 8 | ./inr2h5 - lena.h5
-	h5dump lena.h5 | grep 'Voxel' -A10
+	[ -z "$SILENT" ] && h5dump lena.h5 | grep 'Voxel' -A10
 	# 'so' do not deal with double precision
 	./h52inr lena.h5 | cco -r | so lena.inr | ical
 	;;
@@ -34,7 +35,7 @@ case $1 in
 	for nbytes in 1 2 4; do
 	    echo "####### Unsigned with " $nbytes " byte(s) #######"
 	    cco -o $nbytes lena.inr | ./inr2h5 - lena.h5
-	    h5dump lena.h5 | grep 'Voxel' -A10
+	    [ -z "$SILENT" ] && h5dump lena.h5 | grep 'Voxel' -A10
 	    ./h52inr lena.h5 | so lena.inr | ical
 	done
 	;;
@@ -43,7 +44,7 @@ case $1 in
 	for nbytes in 1 2 4; do
 	    echo "####### Signed with " $nbytes " byte(s) #######"
 	    cco -s -o $nbytes lena.inr | ./inr2h5 - lena.h5
-	    h5dump lena.h5 | grep 'Voxel' -A10
+	    [ -z "$SILENT" ] && h5dump lena.h5 | grep 'Voxel' -A10
 	    ./h52inr lena.h5 | so lena.inr | ical
 	done
 	;;
@@ -53,7 +54,7 @@ case $1 in
 	    echo "####### Unsigned with " $bits " bit(s) #######"
 	    cco -b $bits lena.inr > lena-bits.inr
 	    ./inr2h5 lena-bits.inr lena.h5
-	    h5dump lena.h5 | grep 'Voxel' -A10
+	    [ -z "$SILENT" ] && h5dump lena.h5 | grep 'Voxel' -A10
 	    ./h52inr lena.h5 | so lena-bits.inr | ical
 	done
 	;;
@@ -63,7 +64,7 @@ case $1 in
 	    echo "####### Packed with " $bits " bit(s) #######"
 	    cco -p -b $bits lena.inr > lena-bits.inr
 	    ./inr2h5 lena-bits.inr lena.h5
-	    h5dump lena.h5 | grep 'Voxel' -A10
+	    [ -z "$SILENT" ] && h5dump lena.h5 | grep 'Voxel' -A10
 	    ./h52inr lena.h5 | so lena-bits.inr | ical
 	done
 	;;
@@ -74,7 +75,7 @@ case $1 in
 	    cco -e $exp lena.inr | ./inr2h5 - lena.h5
 	    cco -e $exp lena.inr | par
 	    cco -e $exp lena.inr | cpar -n | grep EXP
-	    h5dump lena.h5 | grep exponent -A5
+	    [ -z "$SILENT" ] && h5dump lena.h5 | grep exponent -A5
 	    ./h52inr lena.h5 | par
 	    ./h52inr lena.h5 | cpar -n | grep EXP
 	done
@@ -83,7 +84,7 @@ case $1 in
 	    cco -s -e $exp lena.inr | ./inr2h5 - lena.h5
 	    cco -s -e $exp lena.inr | par
 	    cco -s -e $exp lena.inr | cpar -n | grep EXP
-	    h5dump lena.h5 | grep exponent -A5
+	    [ -z "$SILENT" ] && h5dump lena.h5 | grep exponent -A5
 	    ./h52inr lena.h5 | par
 	    ./h52inr lena.h5 | cpar -n | grep EXP
 	done

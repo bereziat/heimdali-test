@@ -26,7 +26,7 @@ int main( int argc, char **argv) {
 	    "\t-d: select ITK directory (0 is default)\n");
 
   /* no HDF5 message error unless -D option is specified */
-  if( !debug_) H5Eset_auto (  0, (H5E_auto2_t) NULL, NULL);
+  if( !debug_) H5Eset_auto2 (  0, (H5E_auto2_t) NULL, NULL);
     
   infileopt(name);
   if( H5Fis_hdf5(name)) {

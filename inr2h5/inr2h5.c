@@ -43,7 +43,7 @@ int main( int argc, char **argv) {
   infileopt(name);
 
   /* no HDF5 message error unless -D option is specified */
-  if( !debug_) H5Eset_auto (  0, (H5E_auto2_t) NULL, NULL);
+  if( !debug_) H5Eset_auto2 (  0, (H5E_auto2_t) NULL, NULL);
   
   nf = imagex_( name, "e", "", &fmt);
     
@@ -52,13 +52,13 @@ int main( int argc, char **argv) {
   fd = H5Fcreate( name, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
 
   /* Create Itk Directories */
-  H5Gcreate( fd, "/ITKImage", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-  H5Gcreate( fd, "/ITKImage/0", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate2( fd, "/ITKImage", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate2( fd, "/ITKImage/0", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   /* Create Dimension dataset */
   geom[0] = 3;
   space = H5Screate_simple( 1, geom, NULL);
-  data = H5Dcreate( fd, "/ITKImage/0/Dimension", H5T_STD_U64LE, space,
+  data = H5Dcreate2( fd, "/ITKImage/0/Dimension", H5T_STD_U64LE, space,
 		    H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   ldims[0] = fmt.NDIMX;
@@ -72,7 +72,7 @@ int main( int argc, char **argv) {
   geom[0] = 3;
   geom[1] = 3;
   space = H5Screate_simple( 2, geom, NULL);
-  data = H5Dcreate( fd, "/ITKImage/0/Directions", H5T_IEEE_F64LE, space,
+  data = H5Dcreate2( fd, "/ITKImage/0/Directions", H5T_IEEE_F64LE, space,
 		    H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   for( i=0; i<9; i++) ddims[i] = 0;
@@ -82,7 +82,7 @@ int main( int argc, char **argv) {
   H5Sclose( space);
 
   /* Meta données: on s'en sert pour l'historique, l'exposant, biais et echelle */
-  H5Gcreate( fd, "/ITKImage/0/MetaData", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate2( fd, "/ITKImage/0/MetaData", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   if( fmt.TYPE != REELLE) {
     i = fmt.EXP > 0 ? fmt.EXP - 200 : -fmt.EXP - 200; 
     write_scalar ( fd, "/ITKImage/0/MetaData/exponent", H5T_STD_I32LE, &i);
@@ -116,7 +116,7 @@ int main( int argc, char **argv) {
   /* Create Origin dataset */
   geom[0] = 3;
   space = H5Screate_simple( 1, geom, NULL);
-  data = H5Dcreate( fd, "/ITKImage/0/Origin", H5T_IEEE_F64LE, space,
+  data = H5Dcreate2( fd, "/ITKImage/0/Origin", H5T_IEEE_F64LE, space,
 		    H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   /* FIXME: écrire les origines dans le H5 */
   H5Dclose( data);
@@ -125,7 +125,7 @@ int main( int argc, char **argv) {
   /* Create Spacing dataset */
   geom[0] = 3;
   space = H5Screate_simple( 1, geom, NULL);
-  data = H5Dcreate( fd, "/ITKImage/0/Spacing", H5T_IEEE_F64LE, space,
+  data = H5Dcreate2( fd, "/ITKImage/0/Spacing", H5T_IEEE_F64LE, space,
 		    H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   ddims[0] = ddims[1] = ddims[2] = 1;
   H5Dwrite( data, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, ddims);
@@ -135,7 +135,7 @@ int main( int argc, char **argv) {
   /* Create VoxelData dataset (image data is here) */
   switch (fmt.TYPE) {
   case REELLE:
-    nbytes = fmt.TYPE;
+    nbytes = fmt.BSIZE;
 
     switch(fmt.BSIZE) {
     case 4: itype = H5T_IEEE_F32LE; break;
@@ -162,11 +162,11 @@ int main( int argc, char **argv) {
   geom[2] = fmt.NDIMX;
   geom[3] = fmt.NDIMV;
   space = H5Screate_simple( fmt.NDIMV == 1 ? 3 : 4, geom, NULL);
-  data  = H5Dcreate( fd, "/ITKImage/0/VoxelData", itype, space,
+  data  = H5Dcreate2( fd, "/ITKImage/0/VoxelData", itype, space,
 		     H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   /* Lecture complete, TODO: frame by frame */
-  buf = (void *) malloc( nbytes*fmt.DIMX*fmt.DIMY);
+  buf = (void *) i_malloc( nbytes*fmt.DIMX*fmt.DIMY);
   c_lect( nf, fmt.DIMY, buf);
 
   if( fmt.BSIZE < 0 && nbytes != 8*(-fmt.BSIZE)) {
