@@ -1,6 +1,6 @@
 # Sous Ubuntu faire: apt-get install libhdf5-serial-dev
 
-CPPFLAGS = `inrinfo --cflags` -Dimagex_=imagenf_
+CPPFLAGS = `inrinfo --cflags` 
 LDLIBS   = `inrinfo --libs`
 CC       = h5cc
 
