@@ -1,0 +1,9 @@
+#### tools ####
+INRIMAGEPATH=/usr/local/inrimage/bin
+HEIMDALIPATH=$HOME/HEIMDALI/heimdali/build/cmd
+
+BAKPATH=$PATH
+
+inrpath() { echo "[=>inrimage]"; PATH=$INRIMAGEPATH:$BAKPATH; hash -r; }
+heimpath() { echo "[=>heimdali]"; PATH=$HEIMDALIPATH:$BAKPATH; hash -r; }
+###############
