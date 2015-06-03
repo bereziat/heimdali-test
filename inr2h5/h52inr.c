@@ -91,8 +91,6 @@ int main( int argc, char **argv) {
     default:
       imerror( 11, "Error: unsupported class type (%d)\n", H5Tget_class(type));
     } 
-
-
     
     space = H5Dget_space( set);
     H5Sget_simple_extent_dims( space, dims, maxdims) ;
@@ -109,19 +107,26 @@ int main( int argc, char **argv) {
     format.DIMY = format.NDIMY * format.NDIMZ;
 
     /* Origins */
-    sprintf( path, "/ITKImage/%d/Origin", dir);
-    set2 = H5Dopen2(fd, path, H5P_DEFAULT);
-    H5Dread(set2, H5T_STD_U64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, origins);
-    H5Dclose(set2);
-    format.offsets[0] = (int)origins[0] ; /* pas sur des indices -> vérifier avec Dimension */
-    format.offsets[1] = (int)origins[1] ; /* pas sur des indices */
-    format.offsets[2] = (int)origins[2] ; /* pas sur des indices */
-
+    {
+      hid_t space;
+      sprintf( path, "/ITKImage/%d/Origin", dir);
+      set2 = H5Dopen2(fd, path, H5P_DEFAULT);
+      space = H5Dget_space( set2);
+      H5Dread( set2, H5T_STD_U64LE, space, H5S_ALL, H5P_DEFAULT, origins);
+      H5Sclose(space);
+      H5Dclose(set2);
+      /* FIXME: cela ne fonctionne pas, on n'arrive pas à lire 
+       * les valeurs, pourquoi ??? */
+      format.offsets[0] = (int)origins[0] ; /* pas sur des indices -> vérifier avec Dimension */
+      format.offsets[1] = (int)origins[1] ; /* pas sur des indices */
+      format.offsets[2] = (int)origins[2] ; /* pas sur des indices */
+    }
+    
     /* Metadata (scale,bias,exponent,history) */
     if( format.TYPE != REELLE) {
       sprintf( path, "/ITKImage/%d/MetaData/exponent", dir);
       set2 = H5Dopen2(fd, path, H5P_DEFAULT);
-      if( set2) {     /* FIXME: error handling verbose */
+      if( set2) {
 	int exponent;
 	H5Dread(set2, H5T_STD_I32LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, &exponent);
 	if( format.EXP > 0)
@@ -133,7 +138,8 @@ int main( int argc, char **argv) {
     
     
     if( igetopt0("-i")) {
-      /* On pourra aussi imprimer les origines , man prtnf */
+      /* On pourra aussi imprimer les origines, bias et autre , man
+	 prtnf */
       c_wrfmg( format.lfmt, 1+2);
       H5Dclose(set);
       H5Fclose(fd);
@@ -147,10 +153,10 @@ int main( int argc, char **argv) {
     outfileopt( name);
     struct image *nf = imagex_( name, "c", "", &format);
     
-    /* The fastest way is to load the full h5file in memory */    
+    /* The fastest way is to load the full h5file in memory */
     data = (void *) malloc( format.BSIZE * H5Sget_simple_extent_npoints(space));
     if( data) {
-      H5Dread( set, mem_type_id, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);    
+      H5Dread( set, mem_type_id, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);
       c_ecr( nf, format.DIMY, data);
     } else {
       /* Not enough memory to hold the image ? We work frame by frame ... */

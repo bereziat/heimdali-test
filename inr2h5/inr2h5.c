@@ -13,9 +13,12 @@
  *  - history [OK but discuss]
  *  - color palette (how is it with ITK ?)
  *  - H5Image
- *  - compression (see inactive by default)
+ *  - -d option ?
  *
- * LIMITATIONS
+ * FIXME:
+ *  - compression (chunking probably not optimal)
+ *
+ * LIMITATIONS:
  *  - no bit coding. It is possible with HDF5 (see BITFIELD datatype class), but I don't
  *    know for ITK...
  */
@@ -32,6 +35,7 @@ int main( int argc, char **argv) {
   struct image *nf;
   struct nf_fmt fmt;
   hid_t fd, space, type, data, group, itype;
+  hid_t plist = H5P_DEFAULT;
   int i, nbytes;
   void *buf;
   
@@ -39,12 +43,14 @@ int main( int argc, char **argv) {
   long    ldims[3];
   double  ddims[9];
   
-  inr_init( argc, argv, "", "", "");
+  inr_init( argc, argv, "0.1", "[input] output [-c]",
+	    "Convert Inrimage to ITK/HDF5. Options are:\n"
+	    "\t-c: compress the image\n");
   infileopt(name);
 
   /* no HDF5 message error unless -D option is specified */
   if( !debug_) H5Eset_auto2 (  0, (H5E_auto2_t) NULL, NULL);
-  
+
   nf = imagex_( name, "e", "", &fmt);
     
   /* create hdf5 structures */
@@ -117,8 +123,11 @@ int main( int argc, char **argv) {
   geom[0] = 3;
   space = H5Screate_simple( 1, geom, NULL);
   data = H5Dcreate2( fd, "/ITKImage/0/Origin", H5T_IEEE_F64LE, space,
-		    H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-  /* FIXME: écrire les origines dans le H5 */
+		     H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  ddims[0] = fmt.offsets[0];
+  ddims[1] = fmt.offsets[1];
+  ddims[2] = fmt.offsets[2];
+  H5Dwrite( data, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, ddims);
   H5Dclose( data);
   H5Sclose( space);
 
@@ -126,7 +135,7 @@ int main( int argc, char **argv) {
   geom[0] = 3;
   space = H5Screate_simple( 1, geom, NULL);
   data = H5Dcreate2( fd, "/ITKImage/0/Spacing", H5T_IEEE_F64LE, space,
-		    H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		     H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   ddims[0] = ddims[1] = ddims[2] = 1;
   H5Dwrite( data, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, ddims);
   H5Dclose( data);
@@ -162,9 +171,23 @@ int main( int argc, char **argv) {
   geom[2] = fmt.NDIMX;
   geom[3] = fmt.NDIMV;
   space = H5Screate_simple( fmt.NDIMV == 1 ? 3 : 4, geom, NULL);
-  data  = H5Dcreate2( fd, "/ITKImage/0/VoxelData", itype, space,
-		     H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
+  /* compression */
+  if( igetopt0("-")) {
+    hsize_t cdims[4];
+    fprintf(stderr,"compression!\n");
+    plist = H5Pcreate (H5P_DATASET_CREATE);	
+    cdims[0] = 1; cdims[1] = geom[1] ; cdims[2] = geom[2]; cdims[3] = 1;
+    
+    H5Pset_chunk (plist, fmt.NDIMV == 1 ? 3 : 4, cdims);
+    H5Pset_deflate( plist, 9);
+  }
+  
+  data  = H5Dcreate2( fd, "/ITKImage/0/VoxelData", itype, space,
+		      H5P_DEFAULT, plist, /* H5P_DEFAULT, */ H5P_DEFAULT);
+
+  fprintf(stderr, "status: %d\n", data);
+  
   /* Lecture complete, TODO: frame by frame */
   buf = (void *) i_malloc( nbytes*fmt.DIMX*fmt.DIMY);
   c_lect( nf, fmt.DIMY, buf);
@@ -180,7 +203,7 @@ int main( int argc, char **argv) {
     /* Dans ce cas, la conversion peut être réalisée in-place */
     c_cnvtbg( buf, buf, fmt.DIMX*fmt.DIMY, icodi, icodo, 0, 0);  // FIXME: fmt.EXP, fmt.EXP) is better ???;
   }  
-  H5Dwrite( data, itype, space, H5S_ALL, H5P_DEFAULT, buf);
+  H5Dwrite( data, itype, /* space */ H5S_ALL, H5S_ALL, H5P_DEFAULT, buf);
   H5Dclose( data);
   H5Dclose( space);
   

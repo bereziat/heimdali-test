@@ -25,3 +25,10 @@ void write_scalar( hid_t fd, char *path, hid_t type, void *buf) {
   H5Dclose( data);
   H5Sclose( space);
 }
+
+/*
+void read_scalar( hid_t fd, char *path, hid_t type, void *buf) {
+  hid_t data = H5Dopen2( fd, path, H5_DEFAULT);
+  H5Dread( data, type, H5S_ALL, )
+}
+*/
