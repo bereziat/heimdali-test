@@ -1,13 +1,6 @@
 #!/bin/bash
 
-echo "Unit tests using $(inrinfo | head -1)"
-echo "==="
-echo ""
-
-case $(inrinfo | head -1) in
-    Inrimage*) ext=inr;;
-    Heimdali*) ext=hd5;;
-esac
+. common.sh
 
 testCim1o() {
     echo  1 2 3 4 5 6 | cim -x 3 -y 2 > /tmp/t$$.$ext
