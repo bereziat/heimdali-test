@@ -2,4 +2,7 @@
 inr2h5/h52inr
 inr2h5/inr2h5
 *.o
+*.inr
+*.h5
+
 
