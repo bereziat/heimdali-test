@@ -1,0 +1,24 @@
+Liste des commandes présentes dans le dépôt et
+leur état d'avancement.
+
+
+* ad, so, mu, di, max, min
+  majeur: les images à virgules fixes ne sont pas correctement lues.
+* asm
+  nouvelle commande destinée à remplacer le couple inrcat/create
+  non testée
+* bi, car, sd, ra, exp, lo, 
+  majeur: les images à virgules fixes ne sont pas correctement lues.
+* sc
+  OK
+* mb, mh, muls, sba, sha, vb, vh,
+  non certifié
+* cco
+  non certifié
+* par
+  mineur: permuter -f et -o dans l'ordre d'affichage
+* ical
+  mineur: format des flottants à l'impression
+* itest
+  non testé
+* 
