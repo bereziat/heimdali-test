@@ -1,5 +1,5 @@
-Liste des commandes présentes dans le dépôt et
-leur état d'avancement.
+Liste des 52 commandes présentes dans le dépôt et leur état
+d'avancement.
 
 
 * ad, so, mu, di, max, min
@@ -7,18 +7,83 @@ leur état d'avancement.
 * asm
   nouvelle commande destinée à remplacer le couple inrcat/create
   non testée
-* bi, car, sd, ra, exp, lo, 
+* bi, car, sd, ra, exp, lo, mo, vh ,vb
   majeur: les images à virgules fixes ne sont pas correctement lues.
 * sc
   OK
-* mb, mh, muls, sba, sha, vb, vh,
-  non certifié
+* mb, mh:
+  OK
+* vb, vh
+  mineur: mauvaise interface pour les paramètres.
+* muls, sba, sha
+  en cours de tests.
 * cco
-  non certifié
+  une issue à fixer
+* cim
+  issue majeure à fixer
+* carflo
+  OK
+* extg
+  des issues à fixer  
 * par
   mineur: permuter -f et -o dans l'ordre d'affichage
 * ical
   mineur: format des flottants à l'impression
+* flofix, fixflo
+  non testés
 * itest
+  mineur: ne fait pas lire dans stdin
+* izoom
   non testé
-* 
+* dect
+  issue à fixer
+* conv
+  issue à fixer
+* fmoy 
+  ne semble pas fonctionner: elle écroule ma machine sur un simple test.
+* fzoom
+  non testé
+* logic
+  non testé
+* hconv
+  OK
+* heiminfo, inrinfo
+  OK
+* ical
+  issue mineure (affichage)
+* idf, rdf, ddf, ce, ma, ri
+  issue à fixer avant tests plus approfondis
+* melg
+  ne fonctionne pas
+* norma
+  ok
+* raz
+  ok
+* tpr
+  une issue mineure sur l'affichage
+  une issue sur l'interface (non encore publié sur github : -f= )
+* rot
+  non testé
+
+
+Liste des commandes manquantes:
+* cnvcol
+* ge
+* his
+* icompose 
+* se
+* to
+* tran 
+* dmo
+* ifmt
+* imo
+* rmo
+* im2ps
+* im2psc,
+* aff
+* ero
+* recfilters
+* connexe
+* xvis
+* xflow
+* lecture/écriture H5 sous matlab

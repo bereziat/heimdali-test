@@ -1,5 +1,5 @@
 #!/bin/bash
-# test of arithmetic command with two image parameters: ad, so, mu, di, min, max
+# test of arithmetic commands having two images as input: ad, so, mu, di, min, max
 
 . common.sh
 

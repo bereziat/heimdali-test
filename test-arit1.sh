@@ -1,12 +1,13 @@
 #!/bin/bash
-# test of arithmetic command with two image parameter: bi, sc, sd, lo, ra, car
+# test of arithmetic command with one image as input: bi, sc, sd, lo, ra, car, mo
 
 . common.sh
 
 echo -1 0 1 | cim -r -x 3 -y 1 > im1.$ext
 
+# provisoire, a modifier lorsque cim sera fixée (-r)
 echo 0 127 255 | /usr/local/inrimage/bin/cim -f -x 3 -y 1 > im2.inr
-inr2h5/inr2h5 im2.inr im2.h5
+/usr/local/inrimage/bin/inr2h5 im2.inr im2.h5
 
 testBiFloat() {
     out=$(bi im1.$ext -n 1 | tpr -c | sed 's/ $//')
@@ -78,8 +79,22 @@ testLoFix() {
     assertEquals "Issue #63" "$out" "-inf -0.697076 0"
 }
 
+testMoFloat() {
+    # mo is in fact an absolute value
+    out=$(mo im1.$ext | tpr -c | sed 's/ $//')
+    assertEquals "$out" "1 0 1"
+}
+
+testMoFix() {    
+    # fixed images are read as usual and result is always in float format
+    assertEquals "toto" $(cco  -f im1.$ext |  mo | par -f) '-r'
+
+    out=$(cco  -f im1.$ext |  mo | tpr -c | sed 's/ $//')
+    assertEquals "$out" "0 0 1"
+}
+
 # tests sur dimensions à faire.
 
 . shunit2/src/shunit2
 
-#rm -f im?.$ext
+rm -f im?.$ext
