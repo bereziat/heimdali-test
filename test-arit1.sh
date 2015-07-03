@@ -9,6 +9,16 @@ echo -1 0 1 | cim -r -x 3 -y 1 > im1.$ext
 echo 0 127 255 | /usr/local/inrimage/bin/cim -f -x 3 -y 1 > im2.inr
 /usr/local/inrimage/bin/inr2h5 im2.inr im2.h5
 
+testArit1StdinAndOutFormat() {
+    for cmd in bi sc sd ; do 
+	assertTrue "test stdin $cmd" "$cmd <im1.$ext -n 3 | itest -r "
+    done
+    for cmd in car ra exp lo mo; do
+	assertTrue "test stdin $cmd" "$cmd <im1.$ext| itest -r "
+    done
+	       
+}
+
 testBiFloat() {
     out=$(bi im1.$ext -n 1 | tpr -c | sed 's/ $//')
     assertEquals  "$out" "0 1 2"
@@ -86,11 +96,9 @@ testMoFloat() {
 }
 
 testMoFix() {    
-    # fixed images are read as usual and result is always in float format
-    assertEquals "toto" $(cco  -f im1.$ext |  mo | par -f) '-r'
-
-    out=$(cco  -f im1.$ext |  mo | tpr -c | sed 's/ $//')
-    assertEquals "$out" "0 0 1"
+    out=$(mo im2.$ext | tpr -c $fmt%f | sed 's/ $//')
+    res="$(carflo 0 127 255)"
+    assertEquals "$out " "$res"
 }
 
 # tests sur dimensions à faire.

@@ -22,7 +22,6 @@ testMbFix() {
     assertEquals "$out" "255 255 0"
 }
 
-
 testMhFloat() {
     out=$(mh -n 0.5 im1.$ext | tpr -c | sed 's/ $//')
     assertEquals "$out" "0 0 255"
@@ -37,74 +36,43 @@ testVbCheckInterface() {
     assertTrue "Issue #65" "vb -n 0.5 0.247059 im1.$ext | par"
 }
 
-# provisoire
-# itest ne sait pas lire dans stdin : issue #66
 testVbReturnsFloat() {
     # always returns float values
-    case $ext in
-	h5)
-	    assertEquals "$(vb -n 0.5 -v 0.247059 im1.$ext | par -f)" " -r"
-	    assertEquals "$(vb -n 0.5 -v 0.247059 im2.$ext | par -f)" " -r"
-	    ;;
-	inr)
-	    assertTrue "vb -n 0.5 0.247059 im1.$ext | itest -r"
-	    assertTrue "vb -n 0.5 0.247059 im2.$ext | itest -r"
-	    ;;
-    esac
+    assertTrue "vb -n 0.5 0.247059 im1.$ext | itest -r"
+    assertTrue "vb -n 0.5 0.247059 im2.$ext | itest -r"
 }
 
 testVbFloat() {
-    # Provisoire (issue #65)
-    local v
-    [ $ext = h5 ] && v="-v"
-    out=$(vb -n 0.5 $v 0.247059 im1.$ext | tpr -c | sed 's/ $//')
+    out=$(vb -n 0.5 0.247059 im1.$ext | tpr -c | sed 's/ $//')
     assertEquals "$out" "0.247059 0.247059 1"
 } 
 
 testVbFix() {
-    # Provisoire (issue #65)
-    local v
-    [ $ext = h5 ] && v="-v"
-    out=$(vb -n 0.5 $v 0.247059 im2.$ext | tpr -c | sed 's/ $//')
+    out=$(vb -n 0.5 0.247059 im2.$ext | tpr -c | sed 's/ $//')
     assertEquals "Issue #63" "$out" "0.247059 0.247059 1"
 }
-
 
 testVbCheckInterface() {
     assertTrue "Issue #65" "vh -n 0.5 0.247059 im1.$ext | par"
 }
 
-# provisoire
-# itest ne sait pas lire dans stdin : issue #66
 testVhReturnsFloat() {
     # always returns float values
-    case $ext in
-	h5)
-	    assertEquals "$(vh -n 0.5 -v 0.247059 im1.$ext | par -f)" " -r"
-	    assertEquals "$(vh -n 0.5 -v 0.247059 im2.$ext | par -f)" " -r"
-	    ;;
-	inr)
-	    assertTrue "vh -n 0.5 0.247059 im1.$ext | itest -r"
-	    assertTrue "vh -n 0.5 0.247059 im2.$ext | itest -r"
-	    ;;
-    esac
+    assertTrue "vh -n 0.5 0.247059 im1.$ext | itest -r"
+    assertTrue "vh -n 0.5 0.247059 im2.$ext | itest -r"
 }
 
 testVhFloat() {
-    # Provisoire (issue #65)
-    local v
-    [ $ext = h5 ] && v="-v"
-    out=$(vh -n 0.5 $v 0.247059 im1.$ext | tpr -c | sed 's/ $//')
+    out=$(vh -n 0.5 0.247059 im1.$ext | tpr -c | sed 's/ $//')
     assertEquals "$out" "0 0.498039 0.247059"
 } 
 
 testVhFix() {
-    # Provisoire (issue #65)
-    local v
-    [ $ext = h5 ] && v="-v"
-    out=$(vh -n 0.5 $v 0.247059 im2.$ext | tpr -c | sed 's/ $//')
+    out=$(vh -n 0.5 0.247059 im2.$ext | tpr -c | sed 's/ $//')
     assertEquals "Issue #63" "$out" "0 0.498039 0.247059"
 }
+
+# TODO: muls, sba sha
 
 . shunit2/src/shunit2
 

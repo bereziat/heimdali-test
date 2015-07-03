@@ -3,6 +3,6 @@ echo "==="
 echo ""
 
 case $(inrinfo | head -1) in
-    Inrimage*) ext=inr;;
-    Heimdali*) ext=h5;;
+    Inrimage*) ext=inr; fmt='-f=';;
+    Heimdali*) ext=h5;  fmt='-f ';;
 esac

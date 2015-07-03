@@ -1,89 +1,89 @@
-Liste des 52 commandes présentes dans le dépôt et leur état
-d'avancement.
-
-
-* ad, so, mu, di, max, min
-  majeur: les images à virgules fixes ne sont pas correctement lues.
-* asm
+* Liste des 52 commandes présentes dans le dépôt et leur état d'avancement.
+** ad, so, mu, di, max, min
+  ok, 1 issue mineure #84 sur di (voir test-arit2.sh)
+** asm
   nouvelle commande destinée à remplacer le couple inrcat/create
   non testée
-* bi, car, sd, ra, exp, lo, mo, vh ,vb
-  majeur: les images à virgules fixes ne sont pas correctement lues.
-* sc
+** bi, car, sd, ra, exp, lo, mo, vh ,vb
   OK
-* mb, mh:
+** sc
   OK
-* vb, vh
-  mineur: mauvaise interface pour les paramètres.
-* muls, sba, sha
+** mb, mh, vb, vh
+  OK (voir test-thresh.sh)
+** muls, sba, sha
   en cours de tests.
-* cco
+** cco
   une issue à fixer
-* cim
+** cim
   issue majeure à fixer
-* carflo
+** carflo
   OK
-* extg
+** extg
   des issues à fixer  
-* par
+** par
   mineur: permuter -f et -o dans l'ordre d'affichage
-* ical
-  mineur: format des flottants à l'impression
-* flofix, fixflo
+** ical
+  OK
+** flofix, fixflo
   non testés
-* itest
-  mineur: ne fait pas lire dans stdin
-* izoom
+** itest
+  OK  
+** izoom
   non testé
-* dect
+** dect
   issue à fixer
-* conv
+** conv
   issue à fixer
-* fmoy 
+** fmoy 
   ne semble pas fonctionner: elle écroule ma machine sur un simple test.
-* fzoom
+** fzoom
   non testé
-* logic
+** logic
   non testé
-* hconv
+** hconv
   OK
-* heiminfo, inrinfo
+** heiminfo, inrinfo
   OK
-* ical
-  issue mineure (affichage)
-* idf, rdf, ddf, ce, ma, ri
+** idf, rdf, ddf, ce, ma, ri
   issue à fixer avant tests plus approfondis
-* melg
+** melg
   ne fonctionne pas
-* norma
+** norma
   ok
-* raz
+** raz
   ok
-* tpr
+** tpr
   une issue mineure sur l'affichage
   une issue sur l'interface (non encore publié sur github : -f= )
-* rot
+** rot
   non testé
 
+* Liste des commandes manquantes
+** cnvcol
+** ge
+** his
+** icompose 
+** se
+** to
+** tran 
+** dmo
+** ifmt
+** imo
+** rmo
+** im2ps
+** im2psc,
+** aff
+** ero
+** recfilters
+** connexe
+** xvis
+** xflow
+** lecture/écriture H5 sous matlab
 
-Liste des commandes manquantes:
-* cnvcol
-* ge
-* his
-* icompose 
-* se
-* to
-* tran 
-* dmo
-* ifmt
-* imo
-* rmo
-* im2ps
-* im2psc,
-* aff
-* ero
-* recfilters
-* connexe
-* xvis
-* xflow
-* lecture/écriture H5 sous matlab
+
+* Liste des tickets fermés par David depuis juin 2015
+ - #66 (itest & stdin) : j'ai validé
+ - #65 (interface vh/vb) : j'ai validé
+ - #63 (lecture image virg. ): validés sur les commandes arit1 et arit2
+ - #60 (ical) : validé
+
