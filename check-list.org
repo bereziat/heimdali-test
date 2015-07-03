@@ -12,8 +12,10 @@
   OK (voir test-thresh.sh)
 ** muls, sba, sha
   en cours de tests.
-** cco
-  une issue à fixer
+** cco -r
+   ok
+** cco -f
+   issue 83
 ** cim
   issue majeure à fixer
 ** carflo
@@ -86,4 +88,4 @@
  - #65 (interface vh/vb) : j'ai validé
  - #63 (lecture image virg. ): validés sur les commandes arit1 et arit2
  - #60 (ical) : validé
-
+ - #48,#59 (cco -r): validé

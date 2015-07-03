@@ -28,6 +28,7 @@ echo "**** Commande tpr ****"
 echo A FAIRE
 echo 
 
+
 echo "**** Commandes arit1 ****"
 inrimage
 ./test-arit1.sh
